@@ -1,57 +1,163 @@
+// ================= REGEX =================
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// ================= DOM ELEMENTS =================
 const message = document.getElementById("message");
+const signupForm = document.getElementById("signupForm");
 
-message.innerHTML = "";
+const usernameInput = document.getElementById("username");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const repasswordInput = document.getElementById("repassword");
+const genderInputs = document.querySelectorAll('input[name="gender"]');
 
-document.getElementById("signupForm").addEventListener("submit", function (e) {
-  e.preventDefault();
+// ================= HELPER FUNCTIONS =================
+function showError(msg) {
+  message.innerHTML = `<div class="alert alert-danger">${msg}</div>`;
+}
 
-  const username = document.getElementById("username").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const repassword = document.getElementById("repassword").value.trim();
-  const gender = document.querySelector('input[name="gender"]:checked');
+function showSuccess(msg) {
+  message.innerHTML = `<div class="alert alert-success">${msg}</div>`;
+}
 
-  // Clear previous message
+function clearMessage() {
   message.innerHTML = "";
+}
 
-  // Validation: Check all fields are filled
-  if (!username || !email || !password || !repassword) {
-    message.innerHTML = `<div class="alert alert-danger">❌ All fields are required</div>`;
-    return;
+// ================= REAL-TIME VALIDATION =================
+usernameInput.addEventListener("input", validateUsername);
+emailInput.addEventListener("input", validateEmail);
+passwordInput.addEventListener("input", validatePassword);
+repasswordInput.addEventListener("input", validatePasswordMatch);
+
+genderInputs.forEach(radio => {
+  radio.addEventListener("change", validateGender);
+});
+
+// ================= VALIDATION FUNCTIONS =================
+function validateUsername() {
+  const username = usernameInput.value.trim();
+
+  if (!username) {
+    showError("❌ Username is required");
+    return false;
+  }
+  if (username.length < 3) {
+    showError("❌ Username must be at least 3 characters");
+    return false;
+  }
+  if (username.length > 20) {
+    showError("❌ Username must not exceed 20 characters");
+    return false;
+  }
+  if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+    showError("❌ Username can contain only letters, numbers, _ and -");
+    return false;
   }
 
-  // Validation: Check gender is selected
-  if (!gender) {
-    message.innerHTML = `<div class="alert alert-danger">❌ Please select a gender</div>`;
-    return;
+  clearMessage();
+  return true;
+}
+
+function validateEmail() {
+  const email = emailInput.value.trim();
+
+  if (!email) {
+    showError("❌ Email is required");
+    return false;
+  }
+  if (!emailRegex.test(email)) {
+    showError("❌ Invalid email format");
+    return false;
   }
 
-  // Validation: Check password length
+  clearMessage();
+  return true;
+}
+
+function validatePassword() {
+  const password = passwordInput.value.trim();
+
+  if (!password) {
+    showError("❌ Password is required");
+    return false;
+  }
   if (password.length < 6) {
-    message.innerHTML = `<div class="alert alert-danger">❌ Password must be at least 6 characters</div>`;
-    return;
+    showError("❌ Password must be at least 6 characters");
+    return false;
+  }
+  if (password.length > 50) {
+    showError("❌ Password must not exceed 50 characters");
+    return false;
   }
 
-  // Validation: Check passwords match
+  clearMessage();
+  return true;
+}
+
+function validatePasswordMatch() {
+  const password = passwordInput.value.trim();
+  const repassword = repasswordInput.value.trim();
+
+  if (!repassword) {
+    showError("❌ Please confirm your password");
+    return false;
+  }
   if (password !== repassword) {
-    message.innerHTML = `<div class="alert alert-danger">❌ Password and Re-password must be the same</div>`;
-    return;
+    showError("❌ Passwords do not match");
+    return false;
   }
 
-  // All validations passed - Save user data
+  clearMessage();
+  return true;
+}
+
+function validateGender() {
+  const gender = document.querySelector('input[name="gender"]:checked');
+  if (!gender) {
+    showError("❌ Please select a gender");
+    return false;
+  }
+
+  clearMessage();
+  return true;
+}
+
+// ================= FORM SUBMIT =================
+signupForm.addEventListener("submit", function (e) {
+  e.preventDefault();
+  clearMessage();
+
+  const isUsernameValid = validateUsername();
+  if (!isUsernameValid) return;
+
+  const isEmailValid = validateEmail();
+  if (!isEmailValid) return;
+
+  const isPasswordValid = validatePassword();
+  if (!isPasswordValid) return;
+
+  const isPasswordMatchValid = validatePasswordMatch();
+  if (!isPasswordMatchValid) return;
+
+  const isGenderValid = validateGender();
+  if (!isGenderValid) return;
+
+  // ================= SAVE USER =================
   const userData = {
-    username,
-    email,
-    gender: gender.value
+    username: usernameInput.value.trim(),
+    email: emailInput.value.trim(),
+    password: "[encrypted]", // Never store plain passwords
+    gender: document.querySelector('input[name="gender"]:checked').value,
+    createdAt: new Date().toISOString()
   };
 
-  // Save user (LocalStorage - demo purpose)
-  localStorage.setItem("user", JSON.stringify(userData));
-
-  message.innerHTML = `<div class="alert alert-success">
-    ✅ Signup successful! Welcome ${username}!
-  </div>`;
-
-  // Clear form
-  document.getElementById("signupForm").reset();
+  try {
+    localStorage.setItem("user", JSON.stringify(userData));
+    showSuccess(`✅ Signup successful! Welcome <b>${userData.username}</b>`);
+    signupForm.reset();
+  } catch (err) {
+    showError("❌ Failed to save data. Please try again.");
+    console.error(err);
+  }
 });
