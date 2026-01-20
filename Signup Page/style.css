@@ -1,0 +1,94 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.signup-card {
+  max-width: 450px;
+  margin: 60px auto;
+  padding: 40px;
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.signup-card h3 {
+  color: #667eea;
+  font-weight: 700;
+  margin-bottom: 30px;
+  font-size: 28px;
+}
+
+.form-label {
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.form-control {
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 15px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.form-check-input {
+  border: 2px solid #e0e0e0;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}
+
+.form-check-input:checked {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+.form-check-label {
+  cursor: pointer;
+  margin-left: 8px;
+  color: #555;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  padding: 12px 20px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.alert {
+  border-radius: 8px;
+  border: none;
+  font-weight: 500;
+}
+
+.alert-danger {
+  background-color: #fee;
+  color: #c33;
+}
+
+.alert-success {
+  background-color: #efe;
+  color: #3c3;
+}
